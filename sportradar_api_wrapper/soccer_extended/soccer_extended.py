@@ -22,12 +22,36 @@ class SoccerExtended:
         return self._call_endpoint("competitions")
 
     def get_season_summary(self, season_urn: str):
-        return self._call_endpoint(f"seasons/{season_urn}/summaries")
+        endpoint = f"seasons/{season_urn}/summaries"
 
-    def _call_endpoint(self, endpoint: str) -> Optional[dict]:
+        response = self._call_endpoint(endpoint=endpoint)
+
+        if self.offset == 0 and self.limit == 0:
+            r, offset, limit = [0], 200, 400
+            while r:
+                r = self._call_endpoint(endpoint=endpoint, offset=offset, limit=limit).get("summaries")
+                response["summaries"].extend(r)
+                offset += 200
+                limit += 200
+
+        return response
+
+    def _call_endpoint(self, endpoint: str, offset=None, limit=None) -> Optional[dict]:
+        if not offset:
+            offset = self.offset
+        if not limit:
+            limit = self.limit
+
         sleep(self.sleep_time)
         url = f"http://api.sportradar.us/{self.api}/{self.api_access_level}/{self.api_version}/{self.api_language_code}/{endpoint}.{self.api_format}"
-        response = requests.get(url, timeout=self.timeout, params={"api_key": self.api_key, "limit": self.limit, "offset": self.offset})
+
+        print(f"[{endpoint}] {offset=} {limit=}")
+        print(f"[{endpoint}] Calling endpoint...")
+
+        response = requests.get(url, timeout=self.timeout, params={"api_key": self.api_key, "offset": offset, "limit": limit})
+
+        print(f"[{endpoint}] Status code: 200")
+
         if response.status_code == 200:
             return response.json()
         else:
