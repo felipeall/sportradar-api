@@ -1,8 +1,9 @@
+import logging
 from dataclasses import dataclass
 from time import sleep
 
 import requests
-from requests import Response, HTTPError
+from requests import HTTPError, Response
 
 
 @dataclass
@@ -15,6 +16,16 @@ class SportradarAPI:
     api_format: str = "json"
     timeout: int = 120
     sleep_time: int = 1.2
+    quiet: bool = True
+
+    def __post_init__(self):
+        if not self.quiet:
+            logging.basicConfig(
+                level=logging.INFO,
+                format="[%(asctime)s] [SportradarAPI] %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        self.log = logging.getLogger()
 
     def _call_endpoint(self, endpoint: str, key: str) -> dict:
         response = self._make_request(endpoint=endpoint)
@@ -24,18 +35,21 @@ class SportradarAPI:
         request_results_max = response.headers.get("X-Max-Results")
 
         if request_results is None or request_results_max is None:
+            self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
             return content
 
         request_results = int(request_results)
         request_results_max = int(request_results_max)
 
         if request_results_max - request_results <= 0:
+            self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
             return content
 
         for offset in range(request_results, request_results_max, request_results):
             response = self._make_request(endpoint=endpoint, offset=offset, limit=request_results)
             content[key].extend(response.json().get(key))
 
+        self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
         return content
 
     def _make_request(self, endpoint: str, offset: int = 0, limit: int = 0) -> Response:
@@ -51,8 +65,8 @@ class SportradarAPI:
             f".{self.api_format}"
         )
 
-        print(f"[{endpoint}] Calling endpoint...")
-        print(f"[{endpoint}] {offset=} {limit=}")
+        self.log.info(f"[{endpoint}] Calling endpoint...")
+        self.log.info(f"[{endpoint}] Parameters: {offset=} {limit=}")
 
         response = requests.get(
             url,
@@ -60,9 +74,9 @@ class SportradarAPI:
             params={"api_key": self.api_key, "offset": offset, "limit": limit},
         )
 
-        print(f"[{endpoint}] Status code: 200")
-        print(
-            f"[{endpoint}] API Key Status: "
+        self.log.info(f"[{endpoint}] Response Status Code: {response.status_code}")
+        self.log.info(
+            f"[{endpoint}] Updated API Key Quota: "
             f"{response.headers.get('X-Plan-Quota-Current')}"
             f"/{response.headers.get('X-Plan-Quota-Allotted')}"
         )
