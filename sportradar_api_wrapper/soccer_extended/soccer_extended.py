@@ -18,16 +18,13 @@ class SoccerExtended:
     sleep_time: int = 1.2
 
     def get_competitions(self) -> dict:
-        endpoint = "competitions"
-        content = self._call_endpoint(endpoint=endpoint, key="competitions")
+        return self._call_endpoint(endpoint="competitions", key="competitions")
 
-        return content
+    def get_seasons(self) -> dict:
+        return self._call_endpoint(endpoint="seasons", key="seasons")
 
     def get_season_summary(self, season_urn: str) -> dict:
-        endpoint = f"seasons/{season_urn}/summaries"
-        content = self._call_endpoint(endpoint=endpoint, key="summaries")
-
-        return content
+        return self._call_endpoint(endpoint=f"seasons/{season_urn}/summaries", key="summaries")
 
     def _call_endpoint(self, endpoint: str, key: str) -> dict:
 
