@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "sportradar-api-wrapper"
+version = "0.1.0"
+description = ""
+authors = ["Felipe Allegretti <felipe@allegretti.me>"]
+readme = "README.md"
+packages = [{include = "sportradar_api_wrapper"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
