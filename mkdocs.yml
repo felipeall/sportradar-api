@@ -6,6 +6,12 @@ theme:
 plugins:
   - search
   - mkdocstrings
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      type: timeago
+  - git-authors:
+      show_contribution: True
 
 nav:
   - index.md
