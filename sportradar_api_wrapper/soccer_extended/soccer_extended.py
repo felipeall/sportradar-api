@@ -15,3 +15,6 @@ class SoccerExtended(SportradarAPI):
 
     def get_season_summary(self, season_urn: str) -> dict:
         return self._call_endpoint(endpoint=f"seasons/{season_urn}/summaries", key="summaries")
+
+    def get_season_competitors(self, season_urn: str) -> dict:
+        return self._call_endpoint(endpoint=f"seasons/{season_urn}/competitors", key="season_competitors")
