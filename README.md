@@ -1,1 +1,1 @@
-# sportradar-soccer-wrapper
+# sportradar-api-wrapper
