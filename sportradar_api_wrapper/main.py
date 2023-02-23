@@ -1,6 +1,7 @@
 import logging
 from dataclasses import dataclass
 from time import sleep
+from typing import Optional
 
 import requests
 from requests import HTTPError, Response
@@ -32,27 +33,28 @@ class SportradarAPI:
         content = response.json()
 
         request_results = response.headers.get("X-Result")
-        request_results_max = response.headers.get("X-Max-Results")
+        request_max_results = response.headers.get("X-Max-Results")
+        self.log.info(f"[{endpoint}] Headers: {request_results=} {request_max_results=}")
 
-        if request_results is None or request_results_max is None:
+        if request_results is None or request_max_results is None:
             self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
             return content
 
         request_results = int(request_results)
-        request_results_max = int(request_results_max)
+        request_max_results = int(request_max_results)
 
-        if request_results_max - request_results <= 0:
-            self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
+        if request_max_results - request_results <= 0:
+            self.log.info(f"[{endpoint}] Total records: {len(content.get(key))}")
             return content
 
-        for offset in range(request_results, request_results_max, request_results):
+        for offset in range(request_results, request_max_results, request_results):
             response = self._make_request(endpoint=endpoint, offset=offset, limit=request_results)
             content[key].extend(response.json().get(key))
 
         self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
         return content
 
-    def _make_request(self, endpoint: str, offset: int = 0, limit: int = 0) -> Response:
+    def _make_request(self, endpoint: str, offset: Optional[int] = None, limit: Optional[int] = None) -> Response:
         sleep(self.sleep_time)
 
         url = (
