@@ -21,6 +21,4 @@ jobs:
         with:
           key: ${{ github.ref }}
           path: .cache
-      - run: pip install mkdocs mkdocs-material mkdocstrings[python] mkdocs-minify-plugin mkdocs-git-revision-date-localized-plugin mkdocs-git-authors-plugin
-      - run: git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
-      - run: mkdocs gh-deploy --force
+      - run: make gh-docs
