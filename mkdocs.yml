@@ -1,0 +1,12 @@
+site_name: Sportradar API Wrapper
+
+theme:
+    name: material
+
+plugins:
+  - search
+  - mkdocstrings
+
+nav:
+  - index.md
+  - SoccerExtended.md
