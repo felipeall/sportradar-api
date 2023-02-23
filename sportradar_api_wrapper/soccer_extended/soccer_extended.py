@@ -3,6 +3,7 @@ from time import sleep
 from typing import Optional
 
 import requests
+from requests import Response, HTTPError
 
 
 @dataclass
@@ -13,46 +14,57 @@ class SoccerExtended:
     api_version: str = "v4"
     api_language_code: str = "en"
     api_format: str = "json"
-    offset: int = 0
-    limit: int = 0
     timeout: int = 120
-    sleep_time: int = 1.1
+    sleep_time: int = 1.2
 
-    def get_competitions(self):
-        return self._call_endpoint("competitions")
+    def get_competitions(self) -> dict:
+        endpoint = "competitions"
+        content = self._call_endpoint(endpoint=endpoint, key="competitions")
 
-    def get_season_summary(self, season_urn: str):
+        return content
+
+    def get_season_summary(self, season_urn: str) -> dict:
         endpoint = f"seasons/{season_urn}/summaries"
+        content = self._call_endpoint(endpoint=endpoint, key="summaries")
 
-        response = self._call_endpoint(endpoint=endpoint)
+        return content
 
-        if self.offset == 0 and self.limit == 0:
-            r, offset, limit = [0], 200, 400
-            while r:
-                r = self._call_endpoint(endpoint=endpoint, offset=offset, limit=limit).get("summaries")
-                response["summaries"].extend(r)
-                offset += 200
-                limit += 200
+    def _call_endpoint(self, endpoint: str, key: str) -> dict:
 
-        return response
+        response = self._make_request(endpoint=endpoint)
+        content = response.json()
 
-    def _call_endpoint(self, endpoint: str, offset=None, limit=None) -> Optional[dict]:
-        if not offset:
-            offset = self.offset
-        if not limit:
-            limit = self.limit
+        request_results = response.headers.get("X-Result")
+        request_results_max = response.headers.get("X-Max-Results")
 
+        if request_results is None or request_results_max is None:
+            return content
+
+        request_results = int(request_results)
+        request_results_max = int(request_results_max)
+
+        if request_results_max - request_results <= 0:
+            return content
+
+        for offset in range(request_results, request_results_max, request_results):
+            response = self._make_request(endpoint=endpoint, offset=offset, limit=request_results)
+            content[key].extend(response.json().get(key))
+
+        return content
+
+    def _make_request(self, endpoint: str, offset: int = 0, limit: int = 0) -> Response:
         sleep(self.sleep_time)
         url = f"http://api.sportradar.us/{self.api}/{self.api_access_level}/{self.api_version}/{self.api_language_code}/{endpoint}.{self.api_format}"
 
-        print(f"[{endpoint}] {offset=} {limit=}")
         print(f"[{endpoint}] Calling endpoint...")
+        print(f"[{endpoint}] {offset=} {limit=}")
 
         response = requests.get(url, timeout=self.timeout, params={"api_key": self.api_key, "offset": offset, "limit": limit})
 
         print(f"[{endpoint}] Status code: 200")
+        print(f"[{endpoint}] API Key Status: {response.headers.get('X-Plan-Quota-Current')}/{response.headers.get('X-Plan-Quota-Allotted')}")
 
         if response.status_code == 200:
-            return response.json()
+            return response
         else:
-            return None
+            raise HTTPError(f"Invalid request, status code: {response.status_code} ({url})")
