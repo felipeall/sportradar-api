@@ -1,6 +1,6 @@
-site_name: Sportradar API Wrapper
-repo_url: https://github.com/felipeall/sportradar-api-wrapper/
-repo_name: sportradar-api-wrapper
+site_name: Sportradar API
+repo_url: https://github.com/felipeall/sportradar-api/
+repo_name: sportradar-api
 
 theme:
     name: material

@@ -1,4 +1,4 @@
-# Sportradar API Wrapper
+# Sportradar API
 Lightweight wrapper for [Sportradar API](https://developer.sportradar.com/docs/read/Home)
 
 ## Set up
@@ -7,11 +7,13 @@ Lightweight wrapper for [Sportradar API](https://developer.sportradar.com/docs/r
 
 ## Installation
 ````bash
-pip install git+https://github.com/felipeall/sportradar-api-wrapper.git
+pip install git+https://github.com/felipeall/sportradar-api.git
 ````
 
 ## Usage
+
 ````python
-from sportradar_api_wrapper import SoccerExtended
+from sportradar_api import SoccerExtended
+
 sportradar = SoccerExtended(api_key='SPORTRADAR_API_KEY')
 ````
