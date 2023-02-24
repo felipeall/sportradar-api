@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - docs
 
 permissions:
   contents: write
@@ -21,4 +20,15 @@ jobs:
         with:
           key: ${{ github.ref }}
           path: .cache
-      - run: make gh-docs
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+      - name: Deploy MkDocs
+        run: |
+          cp README.md docs/index.md
+          mv docs/mkdocs.yml .
+          poetry export --with docs -o requirements-docs.txt --without-hashes
+          pip install -r requirements-docs.txt
+          git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
+          mkdocs gh-deploy --force
