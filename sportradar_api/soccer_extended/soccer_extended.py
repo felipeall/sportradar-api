@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from sportradar_api_wrapper.main import SportradarAPI
+from sportradar_api.main import SportradarAPI
 
 
 @dataclass
