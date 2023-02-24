@@ -1,2 +1,2 @@
 # SoccerExtended
-::: sportradar_api_wrapper.soccer_extended.soccer_extended
+::: sportradar_api.soccer_extended.soccer_extended

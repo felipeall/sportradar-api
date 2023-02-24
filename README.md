@@ -11,7 +11,9 @@ pip install git+https://github.com/felipeall/sportradar-api-wrapper.git
 ````
 
 ## Usage
+
 ````python
-from sportradar_api_wrapper import SoccerExtended
+from sportradar_api import SoccerExtended
+
 sportradar = SoccerExtended(api_key='SPORTRADAR_API_KEY')
 ````
