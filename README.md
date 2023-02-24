@@ -7,7 +7,7 @@ Lightweight wrapper for [Sportradar API](https://developer.sportradar.com/docs/r
 
 ## Installation
 ````bash
-pip install git+https://github.com/felipeall/sportradar-api.git
+pip install sportradar-api
 ````
 
 ## Usage
