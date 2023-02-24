@@ -1,0 +1,20 @@
+site_name: Sportradar API Wrapper
+repo_url: https://github.com/felipeall/sportradar-api-wrapper/
+repo_name: sportradar-api-wrapper
+
+theme:
+    name: material
+
+plugins:
+  - search
+  - mkdocstrings
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      type: timeago
+  - git-authors:
+      show_contribution: True
+
+nav:
+  - index.md
+  - SoccerExtended.md

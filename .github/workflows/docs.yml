@@ -1,0 +1,34 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - uses: actions/cache@v2
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+      - uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+      - name: Deploy MkDocs
+        run: |
+          cp README.md docs/index.md
+          mv docs/mkdocs.yml .
+          poetry export --with docs -o requirements-docs.txt --without-hashes
+          pip install -r requirements-docs.txt
+          git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
+          mkdocs gh-deploy --force
