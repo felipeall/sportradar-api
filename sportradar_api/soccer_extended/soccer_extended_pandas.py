@@ -4,6 +4,7 @@ import pandas as pd
 from flatten_json import flatten
 
 from sportradar_api import SoccerExtended
+from sportradar_api.utils.utils import explode_column, remove_str
 
 
 @dataclass
@@ -37,6 +38,40 @@ class SoccerExtendedPandas:
         seasons = pd.json_normalize(seasons["seasons"])
 
         return seasons
+
+    def get_season_matches_statistics(self, season_urn: str):
+        """Get the players statistics of all matches from a given season.
+
+        Args:
+            season_urn: URN of a given season
+
+        Returns:
+            Pandas DataFrame
+        """
+        season_summaries = self.soccer_extended.get_season_summaries(season_urn=season_urn)
+
+        matches_statistics = (
+            pd.json_normalize(season_summaries, "summaries")
+            .pipe(explode_column, "statistics.totals.competitors", ["sport_event.id", "sport_event.start_time"])
+            .pipe(
+                explode_column,
+                "statistics.totals.competitors.players",
+                [
+                    "sport_event.id",
+                    "sport_event.start_time",
+                    "statistics.totals.competitors.id",
+                    "statistics.totals.competitors.qualifier",
+                ],
+            )
+            .pipe(
+                lambda x: x.set_axis(
+                    [remove_str("_".join(col.split(".")[-2:]), ["sport_event_", "statistics_"]) for col in x.columns],
+                    axis=1,
+                )
+            )
+        )
+
+        return matches_statistics
 
     def get_season_competitors(self, season_urn: str) -> pd.DataFrame:
         """Get all teams participating for a given season.
