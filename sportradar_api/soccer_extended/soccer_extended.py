@@ -5,6 +5,8 @@ from sportradar_api.main import SportradarAPI
 
 @dataclass
 class SoccerExtended(SportradarAPI):
+    """Wrapper to interact with Sportradar SoccerExtended API"""
+
     api: str = "soccer-extended"
 
     def get_competitions(self) -> dict:
