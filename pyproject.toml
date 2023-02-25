@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "sportradar-api"
-version = "0.1.5"
+version = "0.1.6"
 description = "Lightweight wrapper for Sportradar API"
 authors = ["Felipe Allegretti <felipe@allegretti.me>"]
 readme = "README.md"
 license = "MIT"
 homepage = "https://github.com/felipeall/sportradar-api"
-repository = "https://github.com/felipeall/sportradar-api"
+repository = "https://felipeall.github.io/sportradar-api/"
 classifiers = [
     "Topic :: Software Development :: Libraries",
     "Operating System :: OS Independent",
@@ -22,6 +22,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "==2.28.2"
+pandas = "^1.5.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "==23.1.0"
