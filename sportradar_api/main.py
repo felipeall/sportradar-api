@@ -28,16 +28,16 @@ class SportradarAPI:
             )
         self.log = logging.getLogger()
 
-    def _call_endpoint(self, endpoint: str, key: str) -> dict:
+    def _call_endpoint(self, endpoint: str, key: Optional[str] = None) -> dict:
         response = self._make_request(endpoint=endpoint)
         content = response.json()
 
         request_results = response.headers.get("X-Result")
         request_max_results = response.headers.get("X-Max-Results")
-        self.log.info(f"[{endpoint}] Headers: {request_results=} {request_max_results=}")
+        self.log.info(f"[{endpoint}] Headers: {response.headers}")
 
         if request_results is None or request_max_results is None:
-            self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
+            self.log.info(f"[{endpoint}] Fetching complete!")
             return content
 
         request_results = int(request_results)
@@ -45,6 +45,7 @@ class SportradarAPI:
 
         if request_max_results - request_results <= 0:
             self.log.info(f"[{endpoint}] Total records: {len(content.get(key))}")
+            self.log.info(f"[{endpoint}] Fetching complete!")
             return content
 
         for offset in range(request_results, request_max_results, request_results):
@@ -52,6 +53,7 @@ class SportradarAPI:
             content[key].extend(response.json().get(key))
 
         self.log.info(f"[{endpoint}] Parsed records: {len(content.get(key))}")
+        self.log.info(f"[{endpoint}] Fetching complete!")
         return content
 
     def _make_request(self, endpoint: str, offset: Optional[int] = None, limit: Optional[int] = None) -> Response:
