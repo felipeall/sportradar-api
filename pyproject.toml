@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sportradar-api"
-version = "0.2.0"
+version = "0.2.1"
 description = "Lightweight wrapper for Sportradar API"
 authors = ["Felipe Allegretti <felipe@allegretti.me>"]
 readme = "README.md"
