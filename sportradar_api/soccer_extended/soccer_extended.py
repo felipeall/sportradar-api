@@ -45,3 +45,16 @@ class SoccerExtended(SportradarAPI):
             API response
         """
         return self._call_endpoint(endpoint=f"seasons/{season_urn}/competitors", key="season_competitors")
+
+    def get_player_profile(self, player_urn: str) -> dict:
+        """Get the player profile for the given urn. Provides player information, including current and historical team
+        membership info.
+
+        Args:
+            player_urn: URN of a given player
+
+        Returns:
+            API response
+        """
+
+        return self._call_endpoint(endpoint=f"players/{player_urn}/profile")
