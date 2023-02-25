@@ -138,6 +138,8 @@ venv.bak/
 
 # mkdocs documentation
 /site
+/docs/index.md
+mkdocs.yml
 
 # mypy
 .mypy_cache/
