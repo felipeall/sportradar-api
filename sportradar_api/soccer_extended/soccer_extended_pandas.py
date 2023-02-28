@@ -4,18 +4,18 @@ import pandas as pd
 from flatten_json import flatten
 
 from sportradar_api import SoccerExtended
+from sportradar_api.main import SportradarAPI
 from sportradar_api.utils.utils import explode_column, remove_str
 
 
 @dataclass
-class SoccerExtendedPandas:
+class SoccerExtendedPandas(SportradarAPI):
     """Parser to transform the SoccerExtended API response to Pandas DataFrame"""
 
-    api_key: str
-    quiet: bool = True
+    api: str = "soccer-extended"
 
     def __post_init__(self):
-        self.soccer_extended = SoccerExtended(api_key=self.api_key, quiet=self.quiet)
+        self.soccer_extended = SoccerExtended(api_key=self.api_key, verbose=self.verbose)
 
     def get_competitions(self) -> pd.DataFrame:
         """Get all available Soccer competitions.
@@ -39,7 +39,7 @@ class SoccerExtendedPandas:
 
         return seasons
 
-    def get_season_matches_statistics(self, season_urn: str):
+    def get_season_matches_statistics(self, season_urn: str) -> pd.DataFrame:
         """Get the players statistics of all matches from a given season.
 
         Args:
