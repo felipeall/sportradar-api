@@ -1,4 +1,5 @@
 import logging
+import os
 from dataclasses import dataclass
 from time import sleep
 from typing import Optional
@@ -9,24 +10,36 @@ from requests import HTTPError, Response
 
 @dataclass
 class SportradarAPI:
-    api_key: str
     api: str
+    api_key: Optional[str] = None
     api_access_level: str = "trial"
     api_version: str = "v4"
     api_language_code: str = "en"
     api_format: str = "json"
     timeout: int = 120
     sleep_time: int = 1.2
-    quiet: bool = True
+    verbose: bool = True
 
     def __post_init__(self):
-        if not self.quiet:
+        self._set_logger()
+        self._set_api_key()
+
+    def _set_logger(self):
+        if self.verbose:
             logging.basicConfig(
                 level=logging.INFO,
                 format="[%(asctime)s] [SportradarAPI] %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
             )
         self.log = logging.getLogger()
+
+    def _set_api_key(self):
+        if not self.api_key:
+            self.api_key = os.getenv("SPORTRADAR_API_KEY")
+            assert self.api_key, "Please provide `api_key` parameter or set SPORTRADAR_API_KEY environment variable"
+            self.log.info(f'Loaded SPORTRADAR_API_KEY: {self.api_key[:4].ljust(len(self.api_key), "*")}')
+        else:
+            self.log.info(f'Loaded `api_key` parameter: {self.api_key[:4].ljust(len(self.api_key),"*")}')
 
     def _call_endpoint(self, endpoint: str, key: Optional[str] = None) -> dict:
         response = self._make_request(endpoint=endpoint)
