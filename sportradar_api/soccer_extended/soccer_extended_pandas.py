@@ -87,6 +87,24 @@ class SoccerExtendedPandas(SportradarAPI):
 
         return season_competitors.assign(season_urn=season_urn)
 
+    def get_season_competitor_player(self, season_urn: str) -> pd.DataFrame:
+        """Get all players profile for a given season
+
+        Args:
+            season_urn: URN of a given season
+
+        Returns:
+            Pandas DataFrame
+        """
+        season_competitor_players = self.soccer_extended.get_season_competitor_players(season_urn=season_urn)
+        season_competitor_players = (
+            pd.json_normalize(season_competitor_players["season_competitor_players"])
+            .explode("players")
+            .players.apply(pd.Series)
+        )
+
+        return season_competitor_players
+
     def get_player_profile_info(self, player_urn: str) -> pd.DataFrame:
         """Get the basic information from a player profile
 
