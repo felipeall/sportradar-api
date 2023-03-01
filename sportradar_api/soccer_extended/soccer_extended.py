@@ -48,6 +48,18 @@ class SoccerExtended(SportradarAPI):
         """
         return self._call_endpoint(endpoint=f"seasons/{season_urn}/competitors", key="season_competitors")
 
+    def get_season_competitor_players(self, season_urn: str) -> dict:
+        """Get the competitors and their players in a season. Provides player roster information for every team from a
+         given season.
+
+        Args:
+            season_urn: URN of a given season
+
+        Returns:
+            API response
+        """
+        return self._call_endpoint(endpoint=f"seasons/{season_urn}/competitor_players", key="season_competitor_players")
+
     def get_player_profile(self, player_urn: str) -> dict:
         """Get the player profile for the given urn. Provides player information, including current and historical team
         membership info.
