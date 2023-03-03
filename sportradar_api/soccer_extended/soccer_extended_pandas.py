@@ -117,7 +117,7 @@ class SoccerExtendedPandas(SportradarAPI):
         player_profile = self.soccer_extended.get_player_profile(player_urn=player_urn)
         player_profile_info = pd.json_normalize(player_profile["player"])
 
-        return player_profile_info.assign(player_id=player_urn)
+        return player_profile_info
 
     def get_player_profile_competitors(self, player_urn: str) -> pd.DataFrame:
         """Get the competitors from a player profile
