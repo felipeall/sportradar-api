@@ -5,7 +5,12 @@ from flatten_json import flatten
 
 from sportradar_api import SoccerExtended
 from sportradar_api.main import SportradarAPI
-from sportradar_api.utils.utils import explode_column, remove_str
+from sportradar_api.utils.utils import (
+    explode_column,
+    remove_cols_str,
+    remove_str,
+    replace_cols_str,
+)
 
 
 @dataclass
@@ -38,6 +43,72 @@ class SoccerExtendedPandas(SportradarAPI):
         seasons = pd.json_normalize(seasons["seasons"])
 
         return seasons
+
+    def get_season_matches(self, season_urn: str):
+        """Get the information of all matches from a given season.
+
+        Args:
+            season_urn: URN of a given season
+
+        Returns:
+            Pandas DataFrame
+        """
+        cols = [
+            "sport_event.id",
+            "sport_event.start_time",
+            "sport_event.start_time_confirmed",
+            "sport_event.sport_event_context.sport.id",
+            "sport_event.sport_event_context.category.id",
+            "sport_event.sport_event_context.competition.id",
+            "sport_event.sport_event_context.season.id",
+            "sport_event.coverage.sport_event_properties.lineups",
+            "sport_event.coverage.sport_event_properties.venue",
+            "sport_event.coverage.sport_event_properties.extended_player_stats",
+            "sport_event.coverage.sport_event_properties.extended_team_stats",
+            "sport_event.coverage.sport_event_properties.basic_play_by_play",
+            "sport_event.coverage.sport_event_properties.basic_player_stats",
+            "sport_event.coverage.sport_event_properties.basic_team_stats",
+            "sport_event.competitor_home_id",
+            "sport_event.competitor_away_id",
+            "sport_event.venue.id",
+            "sport_event.sport_event_conditions.ground.neutral",
+            "sport_event_status.status",
+            "sport_event_status.match_status",
+            "sport_event.replaced_by",
+            "sport_event_status.home_score",
+            "sport_event_status.away_score",
+            "sport_event_status.match_tie",
+            "sport_event_status.winner_id",
+        ]
+        season_summaries = self.soccer_extended.get_season_summaries(season_urn=season_urn)
+        season_matches = pd.json_normalize(season_summaries["summaries"])
+
+        competitors = pd.DataFrame(season_matches.pop("sport_event.competitors").to_list())
+        competitors.columns = ["sport_event.competitor_home_id", "sport_event.competitor_away_id"]
+        competitors["sport_event.competitor_home_id"] = competitors["sport_event.competitor_home_id"].apply(
+            lambda x: x.get("id")
+        )
+        competitors["sport_event.competitor_away_id"] = competitors["sport_event.competitor_away_id"].apply(
+            lambda x: x.get("id")
+        )
+
+        season_matches = (
+            season_matches.join(competitors)
+            .loc[:, cols]
+            .pipe(
+                remove_cols_str,
+                [
+                    "sport_event.",
+                    "sport_event_context.",
+                    "coverage.sport_event_properties.",
+                    "sport_event_conditions.",
+                    "sport_event_status.",
+                ],
+            )
+            .pipe(replace_cols_str, {".": "_"})
+        )
+
+        return season_matches
 
     def get_season_matches_statistics(self, season_urn: str) -> pd.DataFrame:
         """Get the players statistics of all matches from a given season.
