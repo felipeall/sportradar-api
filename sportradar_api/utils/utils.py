@@ -31,3 +31,9 @@ def explode_column(
 def remove_cols_str(df: pd.DataFrame, str_list: list) -> pd.DataFrame:
     df.columns = [remove_str(col, str_list) for col in df.columns]
     return df
+
+
+def replace_cols_str(df: pd.DataFrame, replace_map: dict) -> pd.DataFrame:
+    for old, new in replace_map.items():
+        df.columns = [col.replace(old, new) for col in df.columns]
+    return df
