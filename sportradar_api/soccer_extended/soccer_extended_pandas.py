@@ -92,9 +92,11 @@ class SoccerExtendedPandas(SportradarAPI):
             lambda x: x.get("id")
         )
 
+        cols_select = [col for col in cols if col in season_matches.columns]
+
         season_matches = (
             season_matches.join(competitors)
-            .loc[:, cols]
+            .loc[:, cols_select]
             .pipe(
                 remove_cols_str,
                 [
