@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sportradar-api"
-version = "0.2.6"
+version = "0.2.8"
 description = "Lightweight wrapper for Sportradar API"
 authors = ["Felipe Allegretti <felipe@allegretti.me>"]
 readme = "README.md"
@@ -21,9 +21,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = "2.31.0"
 pandas = "1.5.3"
 flatten-json = "0.1.13"
+requests = "2.31.0"
+urllib3 = "1.26.16"
 
 [tool.poetry.group.dev.dependencies]
 black = "23.1.0"
