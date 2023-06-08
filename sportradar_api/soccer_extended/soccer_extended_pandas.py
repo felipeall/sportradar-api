@@ -219,3 +219,37 @@ class SoccerExtendedPandas(SportradarAPI):
         player_profile_roles = pd.json_normalize([flatten(role, separator=".") for role in player_profile["roles"]])
 
         return player_profile_roles.assign(player_urn=player_urn)
+
+    def get_sport_event_statistics(self, sport_event_urn: str) -> pd.DataFrame:
+        """Get the statistics from a sport event
+
+        Args:
+            sport_event_urn: URN of a given sport event
+
+        Returns:
+            Pandas DataFrame
+        """
+        sport_event_summary = self.soccer_extended.get_sport_event_summary(sport_event_urn=sport_event_urn)
+
+        sport_event_statistics = (
+            pd.json_normalize(sport_event_summary)
+            .pipe(explode_column, "statistics.totals.competitors", ["sport_event.id", "sport_event.start_time"])
+            .pipe(
+                explode_column,
+                "statistics.totals.competitors.players",
+                [
+                    "sport_event.id",
+                    "sport_event.start_time",
+                    "statistics.totals.competitors.id",
+                    "statistics.totals.competitors.qualifier",
+                ],
+            )
+            .pipe(
+                lambda x: x.set_axis(
+                    [remove_str("_".join(col.split(".")[-2:]), ["sport_event_", "statistics_"]) for col in x.columns],
+                    axis=1,
+                )
+            )
+        )
+
+        return sport_event_statistics
