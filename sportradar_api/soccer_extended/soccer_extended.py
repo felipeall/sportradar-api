@@ -72,3 +72,14 @@ class SoccerExtended(SportradarAPI):
         """
 
         return self._call_endpoint(endpoint=f"players/{player_urn}/profile")
+
+    def get_sport_event_summary(self, sport_event_urn: str) -> dict:
+        """Get the summary of a given sport event urn, including results.
+
+        Args:
+            sport_event_urn: URN of a given sport event
+
+        Returns:
+            API response
+        """
+        return self._call_endpoint(endpoint=f"sport_events/{sport_event_urn}/summary")
