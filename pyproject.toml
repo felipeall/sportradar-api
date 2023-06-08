@@ -21,7 +21,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = "2.28.2"
+requests = "2.31.0"
 pandas = "1.5.3"
 flatten-json = "0.1.13"
 
